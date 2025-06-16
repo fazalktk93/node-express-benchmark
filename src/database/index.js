@@ -1,33 +1,28 @@
 const { Sequelize } = require("sequelize");
 
-// Set up Sequelize with environment variables
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASS,
+  process.env.DB_NAME || "dummy_db",
+  process.env.DB_USER || "dummy_user",
+  process.env.DB_PASS || "dummy_pass",
   {
-    host: process.env.DB_HOST,
+    host: process.env.DB_HOST || "localhost",
     port: process.env.DB_PORT || 3306,
     dialect: "mysql",
-    logging: false, // Set to true if you want SQL query logs
+    logging: false,
   }
 );
 
-// Synchronize models if needed (optional for basic use)
-sequelize.sync();
-
-// Attempt DB connection unless SKIP_DB is set to true
 if (process.env.SKIP_DB !== 'true') {
   (async () => {
     try {
       await sequelize.authenticate();
-      console.log("✅ DB connection established successfully.");
+      console.log("✅ Connected to the database.");
     } catch (error) {
-      console.error("❌ DB connection failed:", error.message);
+      console.error("❌ Database connection failed:", error.message);
     }
   })();
 } else {
-  console.log("⚠️  SKIP_DB is set to true. Database connection skipped.");
+  console.log("⚠️ SKIP_DB=true: Database connection skipped.");
 }
 
 module.exports = sequelize;
